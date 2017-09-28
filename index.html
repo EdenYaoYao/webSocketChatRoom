@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>WebSocket</title>
+</head>
+<body>
+	<h1>WebSocket聊天室案例</h1>
+	<input type="text" id="sendText" />
+	<button id="sendBtn">发送</button>
+	<script type="text/javascript">
+		var websocket = new WebSocket("ws://localhost:8000");
+		function showMessage (str,type){
+			var div = document.createElement("div");
+			div.innerHTML = str;
+			if(type == "进入") {
+				div.style.color = "blue";
+			}
+			else if(type == "离开") {
+				div.style.color = "red";
+			}
+			document.body.appendChild(div);
+		}
+		websocket.onopen = function() {
+			// Web Socket 已连接上
+			console.log("websocket 连接已开启...");
+			document.getElementById("sendBtn").onclick = function() {
+	       		var txt = document.getElementById("sendText").value;
+	       		if(txt) {
+	       			websocket.send(txt);
+	       		}
+	       	}
+		};
+		websocket.onmessage = function(e) {
+			//接收数据
+			console.log(e.data);
+			var msg = JSON.parse(e.data);
+			showMessage(msg.data,msg.type);
+		};
+		websocket.onclose = function()
+       	{ 
+          // 关闭 websocket
+          console.log("websocket 连接已关闭...");
+       	};
+       	
+	</script>
+</body>
+</html>
